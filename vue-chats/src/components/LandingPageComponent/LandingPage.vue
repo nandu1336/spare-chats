@@ -14,6 +14,7 @@
               <intro-component
                 v-if="slideNumber == 1"
                 @showRoomFormRaised="handleShowRoomCreationCardEvent"
+                @enterRoom="handleEnterRoomEvent"
               ></intro-component>
 
               <room-form-component
@@ -38,6 +39,10 @@
 import IntroComponent from "./IntroComponent";
 import RoomFormComponent from "./RoomFormComponent";
 import SuccessPromptComponent from "./SuccessPromptComponent";
+import store from "../../store/index";
+import router from "../../router/index";
+import { v4 as uuid } from "uuid";
+
 export default {
   components: {
     IntroComponent,
@@ -47,9 +52,9 @@ export default {
   mounted() {},
   data() {
     return {
-      ws: "",
+      ws: store.state.ws,
       slideNumber: 1,
-      roomTitle: "",
+      roomName: "",
       roomOwnerName: "",
       roomSuccessfullyCreated: false,
       roomCode: "",
@@ -62,18 +67,40 @@ export default {
     },
 
     handleCreateRoomEvent(e) {
-      this.roomTitle = e.roomTitle;
+      this.roomName = e.roomName;
       this.roomOwnerName = e.roomOwnerName;
 
       let roomDetails = JSON.stringify({
-        room_name: this.roomTitle,
+        room_name: this.roomName,
         room_owner: this.roomOwnerName,
+        user_id: uuid(),
       });
 
       this.ws = new WebSocket(`ws://localhost:8000/create_room/${roomDetails}`);
+      store.commit("setWebSocket", this.ws);
 
+      this.startChat();
+    },
+
+    handleEnterRoomEvent(details) {
+      console.log("e in handleEnterRoomEvent:", details);
+      if (!this.roomName) {
+        console.log("the person who is trying to enter is not the owner.");
+        this.ws = new WebSocket(
+          `ws://localhost:8000/join_room/${JSON.stringify(details)}`
+        );
+        store.commit("setWebSocket", this.ws);
+        this.startChat();
+      } else {
+        store.commit("setRoomName", this.roomName);
+        console.log("this.roomName::", this.roomName);
+        router.push("/room");
+      }
+    },
+
+    startChat() {
       this.ws.onopen = (e) => {
-        console.log("Room Created Successfully!!!", e);
+        console.log("Connection Established With WebSocketServer.", e);
       };
 
       this.ws.onmessage = (e) => {
@@ -82,12 +109,9 @@ export default {
           this.slideNumber = 3;
           this.roomCode = e.data.split("200:")[1];
           console.log("this.roomCode:", this.roomCode);
+          router.push("/room");
         }
       };
-    },
-
-    handleEnterRoomEvent(e) {
-      console.log("e in handleEnterRoomEvent:", e);
     },
   },
 

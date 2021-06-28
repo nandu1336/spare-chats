@@ -12,7 +12,7 @@
         <div class="columns">
           <div class="column" style="margin-bottom: 5%">
             <input
-              v-model="roomTitle"
+              v-model="roomName"
               type="text"
               required
               placeholder="Enter Room Name"
@@ -50,7 +50,7 @@
 export default {
   data() {
     return {
-      roomTitle: "",
+      roomName: "",
       roomOwnerName: "",
     };
   },
@@ -58,16 +58,16 @@ export default {
   methods: {
     raiseCreateRoomEvent() {
       console.log(
-        "roomTitle:",
-        this.roomTitle,
+        "roomName:",
+        this.roomName,
         "roomOwnerName:",
         this.roomOwnerName
       );
-      if (this.roomTitle.length == 0 || this.roomOwnerName.length == 0) {
+      if (this.roomName.length == 0 || this.roomOwnerName.length == 0) {
         alert("Please Enter Room Title and Owner Name Before Proceeding.");
       } else {
         this.$.emit("createRoomRaised", {
-          roomTitle: this.roomTitle,
+          roomName: this.roomName,
           roomOwnerName: this.roomOwnerName,
         });
       }

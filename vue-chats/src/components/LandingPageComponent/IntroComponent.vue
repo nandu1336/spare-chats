@@ -19,8 +19,27 @@
       </div>
 
       <div class="column">
+        <div>
+          <input
+            type="text"
+            v-model="username"
+            placeholder="Enter Your Name"
+            class="pl-2 mb-2"
+          />
+        </div>
+
         <div class="column">
-          <input placeholder="Enter a code or link" class="pl-2" />
+          <input
+            type="text"
+            v-model="roomCode"
+            @keyup.enter="raiseRoomEnterEvent"
+            placeholder="Enter a code or link"
+            class="pl-2 mb-2"
+          />
+        </div>
+
+        <div>
+          <button @click="raiseRoomEnterEvent">Join</button>
         </div>
       </div>
 
@@ -30,10 +49,26 @@
 </template>
 
 <script>
+import { v4 as uuid } from "uuid";
+
 export default {
+  data() {
+    return {
+      username: "",
+      roomCode: "",
+    };
+  },
   methods: {
     raiseShowRoomFormEvent() {
       this.$.emit("showRoomFormRaised");
+    },
+
+    raiseRoomEnterEvent() {
+      this.$.emit("enterRoom", {
+        room_id: this.roomCode,
+        username: this.username,
+        user_id: uuid(),
+      });
     },
   },
 };

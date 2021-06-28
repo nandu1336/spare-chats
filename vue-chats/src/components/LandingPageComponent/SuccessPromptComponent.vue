@@ -33,11 +33,7 @@
 
 <script>
 export default {
-  props: {
-    inviteCode: {
-      type: Number,
-    },
-  },
+  props: ["inviteCode"],
 
   methods: {
     raiseEnterRoom() {
