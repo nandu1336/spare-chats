@@ -1,6 +1,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
-from manager import ConnectionManager
+from connection_manager import manager
+from room_manager import Room, RoomManager
 from fastapi.middleware.cors import CORSMiddleware
 import status_codes
 
@@ -47,7 +48,9 @@ html = """
 </html>
 """
 
-manager = ConnectionManager()
+
+
+room_manager = RoomManager()
 
 @app.get("/")
 async def get():
@@ -70,73 +73,42 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         await manager.broadcast(f"Client #{client_id} left the chat")
 
 import json
+active_rooms = {}
 
 @app.websocket("/create_room/{room_details}")
 async def create_room(websocket: WebSocket, room_details):
+    await websocket.accept()
     room_details = json.loads(room_details)
-    is_room_created,room_id = await manager.create_room(websocket, room_details)
-    print("is_room_created:::",is_room_created,"|| room_id:",room_id)
-    if is_room_created:
-        # room_id = room_details['room_id']
+    room = room_manager.create_room(room_details,websocket)
+    room_code = room.room_code
+    print("room_created || room_code:",room_code)
+    
+    while True:
         try:
-            while True:
-                await manager.send_personal_message(f"200:{room_id}", websocket)
-                data = await websocket.receive_text()
-                accept_string = "<meta>accept_request</meta>::"
-                deny_string = "<meta>deny_request</meta>::"
-
-                if accept_string in data:
-                    details = data.split(accept_string)[1].strip()
-                    print("details:",details)
-                    details = details.split("::")
-                    print("details:",details)
-
-                    if len(details) == 2:
-                        room_id = details[0]
-                        user_id = details[1]
-                        print("room_id:",room_id)
-                        print("user_id:",user_id)
-                        
-                        await manager.add_user_to_room(room_id,user_id)
-                    else:
-                        await manager.send_personal_message(f"Partial Details Found.Please Send Room ID and Member ID",websocket)
-                elif deny_string in data:
-                    details = data.split(deny_string)[1]
-                    details = details.split("::")
-
-                    if len(details) == 2:
-                        room_id = details[0]
-                        user_id = details[1]
-                        user = manager.active_members[user_id]
-                        manager.send_personal_message(f"Owner Of The Room {room_id} Has Not Accepted Your Request.",user)
-                await manager.broadcast(f"Client says: {data}",room_id)
+            await websocket.send_text(f"200:{room_code}")
+            await room.chat()
 
         except WebSocketDisconnect:
 
-            manager.disconnect(websocket)
-
-            await manager.broadcast(f"Client #{client_id} left the chat",room_id)
+            room.disconnect(websocket)
+            await room.broadcast(f"Client left the chat")
+            print(f"Client left the chat")
 
 @app.websocket("/join_room/{join_details}")
 async def join_room(websocket: WebSocket,join_details):
     join_details = json.loads(join_details)
     websocket = await manager.connect(websocket,join_details)
-    room_id = join_details['room_id']
+    room_code = join_details['room_code']
 
-    await manager.request_entry(websocket,join_details)
-    # if code == status_codes.REQUEST_DENIED:
-    #     await manager.send_personal_message("<meta>permission_denied::</meta>Owner Has Denied Your Entry Into The Room.",websocket)
-    
-    # elif code == status_codes.ROOM_NOT_FOUND:
-    #     await manager.send_personal_message("You Room Code Is Expired Or You Have Entered Incorrect Room Code.",websocket)
+    await room_manager.join_room(join_details,websocket)  
 
-@app.get('/get_room_details/{room_id:str}')
-async def get_room_details(room_id):
-    # room_details = manager.room_owners[room_id]
+@app.get('/get_room_details/{room_code:str}')
+async def get_room_details(room_code):
+    # room_details = manager.room_owners[room_code]
     room_details = {"trial":True}
     print("room_details at the server:",room_details)
     return room_details
 
 # @app.get('/add_to_room/{member_id}')
 # async def add_to_room(member_id):
-#     manager.find_and_add_to_room(room_id,member_id):
+#     manager.find_and_add_to_room(room_code,member_id):

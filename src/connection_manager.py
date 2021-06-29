@@ -2,6 +2,7 @@ from typing import List
 from fastapi import FastAPI, WebSocket
 import random, string, json
 import status_codes
+import select
 
 class ConnectionManager:
     def __init__(self):
@@ -11,10 +12,12 @@ class ConnectionManager:
         self.active_members: Dict = {}
 
     async def connect(self, websocket: WebSocket,user_details):
+        print("connecet in manager:")
         await websocket.accept()
         self.active_connections.append(websocket)
         user_details['ws'] = websocket
         self.active_members[user_details['user_id']] = user_details
+        print("self.active_members.keys()",self.active_members.keys())
         return websocket
 
     def disconnect(self, websocket: WebSocket):
@@ -32,11 +35,9 @@ class ConnectionManager:
                 await member.send_text(message)
 
     async def create_room(self,websocket: WebSocket,room_details):
-        print("room_details in manager:",room_details)
+        
         room_id =  "".join(random.choice(string.hexdigits) for _ in range(6))
-        # room_id = room_details['room_id']
-        print("roomid created::",room_id)
-        print("room_dtails:",room_details)
+        
         try: 
             room_members = self.active_rooms[room_id]
             if room_members:
@@ -71,4 +72,6 @@ class ConnectionManager:
         await self.send_personal_message(f"You Have Joined Room.",user_ws)
         await self.broadcast(f"{user['username']} Has Entered The Room",room_id)
     
-    # async def deny_entry_to_room(room_id,member_id):
+
+
+manager = ConnectionManager()
