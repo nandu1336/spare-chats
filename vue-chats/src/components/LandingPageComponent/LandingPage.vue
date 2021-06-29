@@ -72,8 +72,8 @@ export default {
 
       let roomDetails = JSON.stringify({
         room_name: this.roomName,
-        room_owner: this.roomOwnerName,
-        user_id: uuid(),
+        owner_name: this.roomOwnerName,
+        owner_id: uuid(),
       });
 
       this.ws = new WebSocket(`ws://localhost:8000/create_room/${roomDetails}`);

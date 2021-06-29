@@ -43,23 +43,24 @@ export default {
           store.commit("appendToMessages", this.message);
           this.ws.send(this.message);
         }
-        // store.commit("appendToMessages", this.message);
+        store.commit("appendToMessages", this.message);
         this.message = "";
       }
     },
 
     handleNewMessage(e) {
       console.log("new message received", e);
-      if (e.data.includes("<meta>join_request</meta>")) {
+      if (e.data.includes("<meta>room_join_request</meta>")) {
         let query = e.data.split("::");
 
-        let username = query[1];
-        let roomId = query[2];
-        let response = prompt(query[3]);
+        let userID = query[1];
+        let response = prompt(query[2]);
         if (response.toLowerCase() == "yes") {
-          response = "<meta>accept_request</meta>::" + roomId + "::" + username;
+          response = "<meta>accept_request</meta>::" + userID;
           this.ws.send(response);
         }
+      } else {
+        store.commit("appendToMessages", e.data);
       }
     },
   },

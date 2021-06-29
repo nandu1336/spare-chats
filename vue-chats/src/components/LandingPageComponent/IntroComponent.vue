@@ -65,7 +65,7 @@ export default {
 
     raiseRoomEnterEvent() {
       this.$.emit("enterRoom", {
-        room_id: this.roomCode,
+        room_code: this.roomCode,
         username: this.username,
         user_id: uuid(),
       });
