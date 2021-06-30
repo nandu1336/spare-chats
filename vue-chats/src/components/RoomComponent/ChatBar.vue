@@ -40,7 +40,6 @@ export default {
       console.log("sendMessage called");
       if (this.message.length) {
         if (this.ws) {
-          store.commit("appendToMessages", this.message);
           this.ws.send(this.message);
         }
         store.commit("appendToMessages", this.message);

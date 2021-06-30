@@ -83,15 +83,17 @@ async def create_room(websocket: WebSocket, room_details):
     room_code = room.room_code
     print("room_created || room_code:",room_code)
     
+    await websocket.send_text(f"200:{room_code}")
     while True:
         try:
-            await websocket.send_text(f"200:{room_code}")
+            await room.listen_for_joiners()
             await room.chat()
+            
 
         except WebSocketDisconnect:
 
             room.disconnect(websocket)
-            await room.broadcast(f"Client left the chat")
+            await room.broadcast_message(f"Client left the chat")
             print(f"Client left the chat")
 
 @app.websocket("/join_room/{join_details}")

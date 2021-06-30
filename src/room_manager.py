@@ -76,7 +76,7 @@ class Room:
 
     async def broadcast_message(self,message):
         for member_socket in self.room_members_sockets:
-            await self.send_personal_message(message,member_socket)
+            await member_socket.send_text(message)
 
     async def join_room(self,member_details,ws):
         print("control inside Room.join_room::",member_details)
@@ -93,27 +93,28 @@ class Room:
         await self.broadcast_message(f"{user_details['username']} Has Entered The Chat.")
     
     async def chat(self):
-        while True:
             for member in self.room_members_sockets:
                 message = await member.receive_text()
-                if member is self.room_owner_ws:
-                    accept_string = "<meta>accept_request</meta>::"
-                    deny_string = "<meta>deny_request</meta>::"
-
-                    if accept_string in message:
-                        user_id = message.split(accept_string)[1].strip()
-                        print("user_id:",user_id)
-                        user = manager.active_members[user_id]
-                        print("user in 105 :",user)
-                        if user and user['ws']:
-                            await self.add_user_to_room(user,user['ws'])
-                        else:
-                            print(f"user is None:{user is None} || user['ws'] is None:{user['ws'] is None}")
-                    elif deny_string in message:
-                        user_id = message.split(deny_string)[1].strip()
-                    
-                        user = manager.active_members[user_id]
-                        manager.send_personal_message(f"Owner Of The Room {room_id} Has Not Accepted Your Request.",user)
-            
+                print("message is not sent by room owner")
                 self.broadcast(message)
     
+    async def listen_for_joiners(self):
+            message = await self.room_owner_ws.receive_text()
+            accept_string = "<meta>accept_request</meta>::"
+            deny_string = "<meta>deny_request</meta>::"
+
+            if accept_string in message:
+                user_id = message.split(accept_string)[1].strip()
+                print("user_id:",user_id)
+                user = manager.active_members[user_id]
+                print("user in 105 :",user)
+                if user and user['ws']:
+                    await self.add_user_to_room(user,user['ws'])
+                else:
+                    print(f"user is None:{user is None} || user['ws'] is None:{user['ws'] is None}")
+            elif deny_string in message:
+                user_id = message.split(deny_string)[1].strip()
+            
+                user = manager.active_members[user_id]
+                manager.send_personal_message(f"Owner Of The Room {room_id} Has Not Accepted Your Request.",user)
+                
