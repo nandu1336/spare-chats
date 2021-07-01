@@ -84,21 +84,24 @@ class Room:
         request_string += f"{member_details['username']} Requested To Join Your Room."
 
         await self.send_message_to_owner(request_string)
-
+        while True:
+            member_message = await ws.receive_text()
+            print("member_message::",member_message)
+            print("member_message type:",type(member_message))
+            # member_room_code = member_message['room_code']
+            # if member_room_code:
+                # if self.room_code == member_room_code:
+            await self.broadcast_message(member_message)
+    
     async def add_user_to_room(self,user_details,ws):
         print("userDetial sin 89:",user_details)
         self.room_members_sockets.append(ws)
         self.room_members_details[user_details['user_id']] = user_details
-
+        await self.send_personal_message("<meta>request_accepted</meta>::200",ws)
         await self.broadcast_message(f"{user_details['username']} Has Entered The Chat.")
     
-    async def chat(self):
-            for member in self.room_members_sockets:
-                message = await member.receive_text()
-                print("message is not sent by room owner")
-                self.broadcast(message)
-    
     async def listen_for_joiners(self):
+        while True:
             message = await self.room_owner_ws.receive_text()
             accept_string = "<meta>accept_request</meta>::"
             deny_string = "<meta>deny_request</meta>::"
@@ -117,4 +120,7 @@ class Room:
             
                 user = manager.active_members[user_id]
                 manager.send_personal_message(f"Owner Of The Room {room_id} Has Not Accepted Your Request.",user)
-                
+            else:
+                await self.broadcast_message(message)
+
+            
