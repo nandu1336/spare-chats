@@ -14,6 +14,7 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket,user_details):
         print("connecet in manager:")
         await websocket.accept()
+        # print("awaiting receive_text on member_message")
         self.active_connections.append(websocket)
         user_details['ws'] = websocket
         self.active_members[user_details['user_id']] = user_details

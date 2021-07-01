@@ -110,6 +110,8 @@ export default {
           this.roomCode = e.data.split("200:")[1];
           console.log("this.roomCode:", this.roomCode);
           router.push("/room");
+        } else if (e.data.includes("<meta>request_accepted</meta>")) {
+          router.push("/room");
         }
       };
     },

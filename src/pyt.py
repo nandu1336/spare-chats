@@ -20,15 +20,26 @@
 # print("script ended at:",end,"|total time taken:",end-start)
 
 
-class Example:
-    def __init__(self):
-        pass
+# class Example:
+#     def __init__(self):
+#         pass
 
-    def initialize(self,name):
-        self.name = name
-        return self
+#     def initialize(self,name):
+#         self.name = name
+#         return self
     
-    def show_name(self):
-        print(self.name)
+#     def show_name(self):
+#         print(self.name)
 
-Example().initialize("Nandu").show_name()
+# Example().initialize("Nandu").show_name()
+
+def get_even_number():
+    for i in range(100):
+        if i % 2 == 0:            
+            yield i 
+        print(f"{i} yielded. continuing the process")
+        i += 1
+
+for item in get_even_number():
+    print(item)
+    break
