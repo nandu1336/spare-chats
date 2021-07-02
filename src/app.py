@@ -87,7 +87,7 @@ async def create_room(websocket: WebSocket, room_details):
     while True:
         try:
             await room.listen_for_joiners()
-            await room.chat()
+            # await room.chat()
             
 
         except WebSocketDisconnect:
