@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import store from "../../store/index";
 export default {
   mounted() {
     this.ws.onmessage = this.handleNewMessage;
@@ -30,7 +29,7 @@ export default {
 
   data() {
     return {
-      ws: store.state.ws,
+      ws: this.$store.state.ws,
       message: "",
     };
   },
@@ -42,7 +41,7 @@ export default {
         if (this.ws) {
           this.ws.send(this.message);
         }
-        store.commit("appendToMessages", this.message);
+        this.$store.commit("appendToMessages", this.message);
         this.message = "";
       }
     },
@@ -59,7 +58,7 @@ export default {
           this.ws.send(response);
         }
       } else {
-        store.commit("appendToMessages", e.data);
+        this.$store.commit("appendToMessages", e.data);
       }
     },
   },

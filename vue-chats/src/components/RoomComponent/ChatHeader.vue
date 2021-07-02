@@ -17,11 +17,10 @@
 </template>
 
 <script>
-import store from "../../store/index";
 export default {
   data() {
     return {
-      roomName: store.state.roomName,
+      roomName: this.$store.state.roomName,
     };
   },
 };

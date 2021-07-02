@@ -39,8 +39,6 @@
 import IntroComponent from "./IntroComponent";
 import RoomFormComponent from "./RoomFormComponent";
 import SuccessPromptComponent from "./SuccessPromptComponent";
-import store from "../../store/index";
-import router from "../../router/index";
 import { v4 as uuid } from "uuid";
 
 export default {
@@ -52,7 +50,7 @@ export default {
   mounted() {},
   data() {
     return {
-      ws: store.state.ws,
+      ws: this.$store.state.ws,
       slideNumber: 1,
       roomName: "",
       roomOwnerName: "",
@@ -77,24 +75,21 @@ export default {
       });
 
       this.ws = new WebSocket(`ws://localhost:8000/create_room/${roomDetails}`);
-      store.commit("setWebSocket", this.ws);
+      this.$store.commit("setWebSocket", this.ws);
 
       this.startChat();
     },
 
     handleEnterRoomEvent(details) {
-      console.log("e in handleEnterRoomEvent:", details);
       if (!this.roomName) {
-        console.log("the person who is trying to enter is not the owner.");
         this.ws = new WebSocket(
           `ws://localhost:8000/join_room/${JSON.stringify(details)}`
         );
-        store.commit("setWebSocket", this.ws);
+        this.$store.commit("setWebSocket", this.ws);
         this.startChat();
       } else {
-        store.commit("setRoomName", this.roomName);
-        console.log("this.roomName::", this.roomName);
-        router.push("/room");
+        this.$store.commit("setRoomName", this.roomName);
+        this.$router.push("/room");
       }
     },
 
@@ -109,9 +104,9 @@ export default {
           this.slideNumber = 3;
           this.roomCode = e.data.split("200:")[1];
           console.log("this.roomCode:", this.roomCode);
-          router.push("/room");
+          this.$router.push("/room");
         } else if (e.data.includes("<meta>request_accepted</meta>")) {
-          router.push("/room");
+          this.$router.push("/room");
         }
       };
     },

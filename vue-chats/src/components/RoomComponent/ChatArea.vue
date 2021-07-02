@@ -12,7 +12,6 @@
 
 <script>
 import MessageComponent from "./MessageComponent.vue";
-import store from "../../store/index";
 
 export default {
   components: {
@@ -21,7 +20,7 @@ export default {
 
   data() {
     return {
-      messages: store.state.messages,
+      messages: this.$store.state.messages,
     };
   },
 };
