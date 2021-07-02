@@ -30,4 +30,8 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from) => {
+  if (to.name == "Home" && from.name == "Room") return false;
+})
+
 export default router;
