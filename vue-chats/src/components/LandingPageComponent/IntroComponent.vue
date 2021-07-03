@@ -60,15 +60,25 @@ export default {
   },
   methods: {
     raiseShowRoomFormEvent() {
-      this.$.emit("showRoomFormRaised");
+      this.$router.push("/roomForm");
     },
 
     raiseRoomEnterEvent() {
-      this.$.emit("enterRoom", {
+      let details = {
         room_code: this.roomCode,
         username: this.username,
         user_id: uuid(),
-      });
+      };
+      if (!this.roomName) {
+        this.ws = new WebSocket(
+          `ws://localhost:8000/join_room/${JSON.stringify(details)}`
+        );
+        this.$store.commit("setWebSocket", this.ws);
+        this.startChat();
+      } else {
+        this.$store.commit("setRoomName", this.roomName);
+        this.$router.push("/room");
+      }
     },
   },
 };
