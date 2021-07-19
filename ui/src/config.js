@@ -1,0 +1,8 @@
+export default {
+    JOIN_REQUEST: "0000",
+    ACCEPT_REQUEST: "1111",
+    DENY_REQUEST: "2222",
+    CHAT: "3333",
+    NEW_MEMBER_JOINED: "4444",
+    OTHERS: "5555",
+}
