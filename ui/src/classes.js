@@ -13,12 +13,12 @@ export function makeMessage(content, purpose, to = {}) {
 class Message {
 
     constructor(content, purpose, to = {}) {
-        this.room_code = store.state.roomDetails.room_code;
         this.content = content;
-        this.sender = store.state.userDetails;
-        this.sent_time = getTime();
         this.purpose = purpose;
+        this.room_code = store.state.roomDetails;
+        this.sent_time = getTime();
         this.to = to;
+        this.sender = store.state.userDetails;
     }
 
     as_json() {

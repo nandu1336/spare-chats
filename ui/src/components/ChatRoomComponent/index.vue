@@ -11,17 +11,14 @@
     </el-dialog>
 
     <el-container>
-      <!-- <el-header>Header</el-header> -->
-      <el-container>
-        <!-- Left side area for chatting -->
+      <!-- Left side area for chatting -->
 
-        <el-aside width="600px">
-          <chat-area-component></chat-area-component>
-        </el-aside>
+      <el-aside width="900px" style="padding: 0px; margin: 0px">
+        <chat-area-component></chat-area-component>
+      </el-aside>
 
-        <!-- Right side area -->
-        <el-main>Main</el-main>
-      </el-container>
+      <!-- Right side area -->
+      <el-main> Main </el-main>
     </el-container>
   </div>
 </template>
@@ -81,6 +78,7 @@ export default {
     acceptUser() {
       let response = "<meta>accept_request</meta>::" + this.userID;
       response = makeMessage(response, config.ACCEPT_REQUEST, this.userID);
+      console.log("sending response:", response);
       this.ws.send(response.as_json());
       this.dialogProp.showDialog = false;
     },

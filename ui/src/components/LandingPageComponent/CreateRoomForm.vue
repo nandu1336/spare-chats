@@ -1,5 +1,4 @@
 <template>
-  <div style="margin: 20px"></div>
   <el-form
     label-position="left"
     label-width="100px"

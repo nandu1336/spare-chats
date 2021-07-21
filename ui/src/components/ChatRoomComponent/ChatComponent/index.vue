@@ -28,9 +28,6 @@ export default {
 </script>
 
 <style scoped>
-.chat-header {
-  height: 5vh;
-}
 .chat-area {
   height: 84vh;
 }
@@ -43,6 +40,7 @@ export default {
   background-color: black;
   color: white;
   padding-top: 15px;
+  height: 5vh;
   text-transform: capitalize;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   font-size: 24px;

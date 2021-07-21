@@ -1,11 +1,13 @@
 
 <template>
-  <message-component
-    v-for="(message, index) in getMessages"
-    :key="index"
-    class="text item"
-    :message="message"
-  ></message-component>
+  <div>
+    <message-component
+      v-for="(message, index) in getMessages"
+      :key="index"
+      class="text item"
+      :message="message"
+    ></message-component>
+  </div>
 </template>
 
 <script>

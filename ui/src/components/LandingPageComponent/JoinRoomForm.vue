@@ -1,5 +1,4 @@
 <template>
-  <div style="margin: 20px"></div>
   <el-form
     v-loading.fullscreen="showLoadingScreen"
     element-loading-text="Requesting Room Owner. Please Wait."
@@ -63,10 +62,17 @@ export default {
     startChat() {
       this.showLoadingScreen = true;
       this.ws.onmessage = (e) => {
+        console.log("e:", e);
         this.showLoadingScreen = false;
 
         let data = JSON.parse(e.data);
         if ((data.purpose = config.ACCEPT_REQUEST)) {
+          console.log("room_details:", data.room_details);
+          this.$store.commit("setRoomDetails", data.room_details);
+          this.$store.commit("setUserDetails", {
+            username: this.roomDetails.username,
+            user_id: this.roomDetails.user_id,
+          });
           this.$router.push("/room");
         }
       };

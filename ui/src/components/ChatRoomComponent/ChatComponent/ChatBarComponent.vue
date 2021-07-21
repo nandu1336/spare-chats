@@ -43,6 +43,7 @@ export default {
           this.message = makeMessage(this.message, config.CHAT);
           this.ws.send(this.message.as_json());
         }
+        console.log("message in chatbar:", this.message);
         this.$store.commit("appendToMessages", this.message);
         this.message = "";
       }

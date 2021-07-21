@@ -53,7 +53,9 @@ export default {
 
   computed: {
     getAlignment() {
-      // console.log("this.$store.state.userDetails.");
+      if (!this.message.sender.username) {
+        return "";
+      }
       let ml =
         this.message.sender.username == this.$store.state.userDetails.username
           ? "ml-auto"
@@ -134,5 +136,8 @@ export default {
 
 .card:hover {
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 480px) {
 }
 </style>
